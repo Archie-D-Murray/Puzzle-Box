@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour {
 
         _direction = Quaternion.AngleAxis(_camera.transform.eulerAngles.y, Vector3.up) * move;
         if (move.sqrMagnitude > 0) {
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(_direction), _turnSpeed * Time.fixedDeltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(_direction), Time.fixedDeltaTime * _turnSpeed);
         }
         _rb.velocity = _direction * _speed;
     }
