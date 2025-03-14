@@ -1,7 +1,8 @@
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour {
+using Utilities;
 
+public class PlayerController : MonoBehaviour {
     [SerializeField] private Transform _camera;
 
     [Header("Movement")]
@@ -13,29 +14,45 @@ public class PlayerController : MonoBehaviour {
     [SerializeField] private Vector3 _direction;
     [SerializeField] private float _coyoteTime = 0.25f;
     [SerializeField] private float _coyoteTimer = 0.0f;
-
     [SerializeField] private LayerMask _groundLayer;
+
+    [Header("Camera")]
+    [SerializeField] private Vector2 _mouseDelta;
+    [SerializeField] private float _thresholdLook = 0.01f;
+    [SerializeField] private float _xSensitivity = 1.0f;
+    [SerializeField] private float _ySensitivity = 1.0f;
+    ///<summary>Euler Y rotation => uses mouseX to offset</summary>
+    [SerializeField] private float _targetCamYaw;
+    ///<summary>Euler X rotation => uses mouseY to offset</summary>
+    [SerializeField] private float _targetCamPitch;
+    [SerializeField] private float _topClamp = 70.0f;
+    [SerializeField] private float _bottomClamp = -30.0f;
+    [SerializeField] private float _cameraAngleOverride = 0.0f;
 
     readonly Vector3 _extents = new Vector3 { x = 0.25f, y = 0.1f, z = 0.25f };
 
     private Rigidbody _rb;
+    private PlayerInputs _inputs;
 
     private void Start() {
         _rb = GetComponent<Rigidbody>();
         _groundLayer = 1 << LayerMask.NameToLayer("Ground");
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        _targetCamYaw = _camera.transform.eulerAngles.y;
+        _inputs = GetComponent<PlayerInputs>();
     }
 
     private void Update() {
-        if (Input.GetKeyDown(KeyCode.Space) && (_grounded || _coyoteTimer < _coyoteTime)) {
+        if (_inputs.Jump && (_grounded || _coyoteTimer < _coyoteTime)) {
             _rb.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
         }
+        _mouseDelta = _inputs.Look;
     }
 
     private void FixedUpdate() {
         _grounded = GetGrounded();
-        Vector3 move = Input.GetAxisRaw("Horizontal") * Vector3.right + Input.GetAxisRaw("Vertical") * Vector3.forward;
+        Vector3 move = _inputs.Move.x * Vector3.right + _inputs.Move.y * Vector3.forward;
         move.y = 0.0f;
         Vector3.ClampMagnitude(move, 1f);
 
@@ -44,7 +61,7 @@ public class PlayerController : MonoBehaviour {
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(_direction), Time.fixedDeltaTime * _turnSpeed);
         }
         if (_grounded) {
-            _rb.velocity = _direction * _speed;
+            _rb.velocity = _direction * (_speed * (_inputs.Sprint ? 1.5f : 1.0f));
             _coyoteTimer = 0.0f;
         } else {
             _rb.velocity += Vector3.down * _fallSpeed;
@@ -52,26 +69,26 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    private void LateUpdate() {
+        Camera();
+    }
+
     private bool GetGrounded() {
         return Physics.CheckSphere(transform.position, 0.45f, _groundLayer);
     }
 
     private void Camera() {
-        /*// if there is an input and camera position is not fixed*/
-        /*if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition) {*/
-        /*    //Don't multiply mouse input by Time.deltaTime;*/
-        /*    float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;*/
-        /**/
-        /*    _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;*/
-        /*    _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;*/
-        /*}*/
-        /**/
-        /*// clamp our rotations so our values are limited 360 degrees*/
-        /*_cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);*/
-        /*_cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);*/
-        /**/
-        /*// Cinemachine will follow this target*/
-        /*CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,*/
-        /*    _cinemachineTargetYaw, 0.0f);*/
+        // if there is an input and camera position is not fixed
+        if (_mouseDelta.sqrMagnitude >= _thresholdLook) {
+            _targetCamYaw += _mouseDelta.x * _xSensitivity;
+            _targetCamPitch += _mouseDelta.y * _ySensitivity;
+        }
+
+        // clamp our rotations so our values are limited 360 degrees
+        _targetCamYaw = Helpers.ClampAngle(_targetCamYaw, float.MinValue, float.MaxValue);
+        _targetCamPitch = Helpers.ClampAngle(_targetCamPitch, _bottomClamp, _topClamp);
+
+        // Cinemachine will follow this target
+        _camera.transform.rotation = Quaternion.Euler(_targetCamPitch + _cameraAngleOverride, _targetCamYaw, 0.0f);
     }
 }

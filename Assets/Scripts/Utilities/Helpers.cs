@@ -34,5 +34,11 @@ namespace Utilities {
         public Vector2 VectorToMouse(Vector2 position) {
             return (WorldMousePosition() - position).normalized;
         }
+
+        public static float ClampAngle(float value, float min, float max) {
+            while (value < -360.0f) { value += 360.0f; }
+            while (value > +360.0f) { value -= 360.0f; }
+            return Mathf.Clamp(value, min, max);
+        }
     }
 }
