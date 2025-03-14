@@ -1,12 +1,15 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerInputs : MonoBehaviour {
+using Utilities;
+
+public class PlayerInputs : Singleton<PlayerInputs> {
     [Header("Character Input Values")]
     public Vector2 Move;
     public Vector2 Look;
     public bool Jump;
     public bool Sprint;
+    public bool Interaction;
 
     [Header("Mouse Cursor Settings")]
     public bool CursorLocked = true;
@@ -14,7 +17,8 @@ public class PlayerInputs : MonoBehaviour {
 
     private PlayerActionMap _actions;
 
-    private void Awake() {
+    protected override void Awake() {
+        base.Awake();
         _actions = new PlayerActionMap();
         _actions.Enable();
         _actions.Player.Move.started += OnMove;

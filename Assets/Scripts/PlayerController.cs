@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour {
     [SerializeField] private Vector2 _mouseDelta;
     [SerializeField] private float _thresholdLook = 0.01f;
     [SerializeField] private float _xSensitivity = 1.0f;
-    [SerializeField] private float _ySensitivity = 1.0f;
+    [SerializeField] private float _ySensitivity = -1.0f;
     ///<summary>Euler Y rotation => uses mouseX to offset</summary>
     [SerializeField] private float _targetCamYaw;
     ///<summary>Euler X rotation => uses mouseY to offset</summary>
@@ -32,7 +32,6 @@ public class PlayerController : MonoBehaviour {
     readonly Vector3 _extents = new Vector3 { x = 0.25f, y = 0.1f, z = 0.25f };
 
     private Rigidbody _rb;
-    private PlayerInputs _inputs;
 
     private void Start() {
         _rb = GetComponent<Rigidbody>();
@@ -40,19 +39,18 @@ public class PlayerController : MonoBehaviour {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         _targetCamYaw = _camera.transform.eulerAngles.y;
-        _inputs = GetComponent<PlayerInputs>();
     }
 
     private void Update() {
-        if (_inputs.Jump && (_grounded || _coyoteTimer < _coyoteTime)) {
+        if (PlayerInputs.Instance.Jump && (_grounded || _coyoteTimer < _coyoteTime)) {
             _rb.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
         }
-        _mouseDelta = _inputs.Look;
+        _mouseDelta = PlayerInputs.Instance.Look;
     }
 
     private void FixedUpdate() {
         _grounded = GetGrounded();
-        Vector3 move = _inputs.Move.x * Vector3.right + _inputs.Move.y * Vector3.forward;
+        Vector3 move = PlayerInputs.Instance.Move.x * Vector3.right + PlayerInputs.Instance.Move.y * Vector3.forward;
         move.y = 0.0f;
         Vector3.ClampMagnitude(move, 1f);
 
@@ -61,7 +59,7 @@ public class PlayerController : MonoBehaviour {
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(_direction), Time.fixedDeltaTime * _turnSpeed);
         }
         if (_grounded) {
-            _rb.velocity = _direction * (_speed * (_inputs.Sprint ? 1.5f : 1.0f));
+            _rb.velocity = _direction * (_speed * (PlayerInputs.Instance.Sprint ? 1.5f : 1.0f));
             _coyoteTimer = 0.0f;
         } else {
             _rb.velocity += Vector3.down * _fallSpeed;
