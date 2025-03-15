@@ -1,3 +1,5 @@
+using System;
+
 using UnityEngine;
 
 namespace Interactable {
@@ -19,6 +21,10 @@ namespace Interactable {
                     receiver.CancelInteraction(_type);
                 }
             }
+        }
+
+        public virtual void PlayerTrigger() {
+            StartInteract(_type);
         }
     }
 

@@ -78,8 +78,8 @@ public class PlayerController : MonoBehaviour {
     private void Camera() {
         // if there is an input and camera position is not fixed
         if (_mouseDelta.sqrMagnitude >= _thresholdLook) {
-            _targetCamYaw += _mouseDelta.x * _xSensitivity;
-            _targetCamPitch += _mouseDelta.y * _ySensitivity;
+            _targetCamYaw += _mouseDelta.x * _xSensitivity * Time.deltaTime;
+            _targetCamPitch += _mouseDelta.y * _ySensitivity * Time.deltaTime;
         }
 
         // clamp our rotations so our values are limited 360 degrees

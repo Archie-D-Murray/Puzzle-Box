@@ -28,11 +28,14 @@ public class PlayerInputs : Singleton<PlayerInputs> {
         _actions.Player.Look.performed += OnLook;
         _actions.Player.Look.canceled += OnLook;
         _actions.Player.Sprint.started += OnSprint;
-        _actions.Player.Sprint.started += OnSprint;
         _actions.Player.Sprint.performed += OnSprint;
-        _actions.Player.Jump.canceled += OnJump;
+        _actions.Player.Sprint.canceled += OnSprint;
+        _actions.Player.Jump.started += OnJump;
         _actions.Player.Jump.performed += OnJump;
         _actions.Player.Jump.canceled += OnJump;
+        _actions.Player.Interaction.started += OnInteraction;
+        _actions.Player.Interaction.performed += OnInteraction;
+        _actions.Player.Interaction.canceled += OnInteraction;
     }
 
     private void OnEnable() {
@@ -61,6 +64,9 @@ public class PlayerInputs : Singleton<PlayerInputs> {
         SprintInput(context.ReadValueAsButton());
     }
 
+    public void OnInteraction(InputAction.CallbackContext context) {
+        InteractionInput(context.ReadValueAsButton());
+    }
 
     public void MoveInput(Vector2 newMoveDirection) {
         Move = newMoveDirection;
@@ -78,7 +84,12 @@ public class PlayerInputs : Singleton<PlayerInputs> {
         Sprint = newSprintState;
     }
 
+    public void InteractionInput(bool newInteractionState) {
+        Interaction = newInteractionState;
+    }
+
     private void OnApplicationFocus(bool hasFocus) {
+        CursorInputForLook = hasFocus;
         SetCursorState(CursorLocked);
     }
 

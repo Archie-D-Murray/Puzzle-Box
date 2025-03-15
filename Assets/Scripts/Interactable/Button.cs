@@ -7,10 +7,15 @@ namespace Interactable {
         [SerializeField] private float _resetTime = 1.0f;
         [SerializeField] private CountDownTimer _reset = new CountDownTimer(1.0f);
 
+        private void Start() {
+            _reset.Reset();
+            _reset.Stop();
+            _reset.OnTimerStop += () => FinishInteract(_type);
+        }
+
         private void FixedUpdate() {
             _reset.Update(Time.fixedDeltaTime);
-            if (_reset.IsFinished) {
-                FinishInteract(_type);
+            if (_reset.IsRunning && _reset.IsFinished) {
             }
         }
 
@@ -23,10 +28,9 @@ namespace Interactable {
             }
         }
 
-        private void OnTriggerEnter(Collider collider) {
-            if (PlayerInputs.Instance.Interaction) {
-                StartInteract(_type);
-            }
+        public override void PlayerTrigger() {
+            Debug.Log($"Button {name} was pressed");
+            base.PlayerTrigger();
         }
     }
 }
