@@ -1,9 +1,11 @@
+using System;
+
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 using Utilities;
 
-public class PlayerInputs : Singleton<PlayerInputs> {
+public class PlayerInputs : Singleton<PlayerInputs>, IDisposable {
     [Header("Character Input Values")]
     public Vector2 Move;
     public Vector2 Look;
@@ -16,6 +18,7 @@ public class PlayerInputs : Singleton<PlayerInputs> {
     public bool CursorInputForLook = true;
 
     private PlayerActionMap _actions;
+    public PlayerActionMap Actions => _actions;
 
     protected override void Awake() {
         base.Awake();
@@ -95,5 +98,11 @@ public class PlayerInputs : Singleton<PlayerInputs> {
 
     private void SetCursorState(bool newState) {
         Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
+    }
+
+    public void Dispose() {
+        if (_actions != null) {
+            _actions.Dispose();
+        }
     }
 }

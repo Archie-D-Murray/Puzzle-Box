@@ -1,6 +1,7 @@
 using Cinemachine;
 
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 using Utilities;
 
@@ -20,20 +21,22 @@ namespace Interactable {
             if (!_camera) {
                 _camera = FindFirstObjectByType<CinemachineVirtualCamera>().transform;
             }
+            PlayerInputs.Instance.Actions.Player.Interaction.started += OnInteraction;
         }
 
         private void FixedUpdate() {
             float distance = float.MaxValue;
             Ray ray = Helpers.Instance.MainCamera.ViewportPointToRay(Vector2.one * 0.5f);
             _emitter = null;
-            foreach (RaycastHit hit in Physics.RaycastAll(ray, _distance, _mask))
+            foreach (RaycastHit hit in Physics.RaycastAll(ray, _distance, _mask)) {
                 if (hit.distance < distance) {
                     _emitter = hit.collider.GetComponent<InteractionEmitter>();
                 }
+            }
         }
 
-        private void Update() {
-            if (_emitter && PlayerInputs.Instance.Interaction) {
+        private void OnInteraction(InputAction.CallbackContext context) {
+            if (_emitter) {
                 _emitter.PlayerTrigger();
             }
         }
