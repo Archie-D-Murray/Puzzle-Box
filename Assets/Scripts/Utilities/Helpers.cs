@@ -40,5 +40,9 @@ namespace Utilities {
             while (value > +360.0f) { value -= 360.0f; }
             return Mathf.Clamp(value, min, max);
         }
+
+        public static float SmoothStep01(float value) {
+            return Mathf.SmoothStep(0.0f, 1.0f, value);
+        }
     }
 }

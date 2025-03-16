@@ -80,12 +80,13 @@ public static class Extensions {
         renderer.color = colour;
     }
 
-    public static void FadeCanvas(this CanvasGroup canvasGroup, float duration, bool fadeToTransparent, MonoBehaviour monoBehaviour) {
-        monoBehaviour.StartCoroutine(CanvasFade(canvasGroup, duration, fadeToTransparent));
+    public static void FadeCanvas(this CanvasGroup canvasGroup, float duration, bool fadeToTransparent, MonoBehaviour monoBehaviour, Action<float> callback = null) {
+        monoBehaviour.StartCoroutine(CanvasFade(canvasGroup, duration, fadeToTransparent, callback));
     }
 
-    private static IEnumerator CanvasFade(CanvasGroup canvasGroup, float duration, bool fadeToTransparent, bool disableRaycast = true) {
+    private static IEnumerator CanvasFade(CanvasGroup canvasGroup, float duration, bool fadeToTransparent, Action<float> callback) {
         CountDownTimer timer = new CountDownTimer(duration);
+        bool disableRaycast = false;
         timer.Start();
         while (timer.IsRunning) {
             canvasGroup.alpha = !fadeToTransparent ? timer.Progress() : 1f - timer.Progress();
@@ -103,6 +104,7 @@ public static class Extensions {
                 canvasGroup.blocksRaycasts = true;
             }
         }
+        callback?.Invoke(canvasGroup.alpha);
     }
 
     public static Vector2 Clamp(this Vector2 position, Vector2 min, Vector2 max) {
