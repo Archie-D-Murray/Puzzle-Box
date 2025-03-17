@@ -34,12 +34,20 @@ namespace Interactable {
                 _renderers[i] = new RenderState(renderers[i], renderers[i].GetComponent<Collider>());
             }
             UpdateRenderState(1f, _show);
+            _timer.OnTimerStop += ActionFinish;
         }
 
         private void FixedUpdate() {
             _timer.Update(Time.fixedDeltaTime);
             if (_timer.IsRunning) {
                 UpdateRenderState(_timer.Progress(), _show);
+            }
+        }
+
+        private void ActionFinish() {
+            foreach (RenderState state in _renderers) {
+                if (!state.Collider) { continue; }
+                state.Collider.enabled = _show;
             }
         }
 
@@ -53,13 +61,13 @@ namespace Interactable {
         }
 
         public override void AcceptInteraction(InteractionSource source) {
-            _show ^= true;
+            _show = !_show;
             _timer.Reset();
             _timer.Start();
         }
 
         public override void CancelInteraction(InteractionSource source) {
-            _show ^= true;
+            _show = !_show;
             _timer.Reset();
             _timer.Start();
         }

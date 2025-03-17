@@ -81,3 +81,4 @@ Cargo.lock
 #Builds/Video Logs
 *.zip
 Assets/Plugins/CodeAssist/
+Demo.mov

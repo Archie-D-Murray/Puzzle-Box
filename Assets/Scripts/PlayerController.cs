@@ -1,3 +1,5 @@
+using Interactable;
+
 using UnityEngine;
 
 using Utilities;
@@ -88,5 +90,18 @@ public class PlayerController : MonoBehaviour {
 
         // Cinemachine will follow this target
         _camera.transform.rotation = Quaternion.Euler(_targetCamPitch + _cameraAngleOverride, _targetCamYaw, 0.0f);
+    }
+
+    private void OnTriggerEnter(Collider collider) {
+        if (collider.gameObject.HasComponent<MoverReparentTarget>()) {
+            transform.parent = collider.transform;
+        }
+    }
+
+    private void OnTriggerExit(Collider collider) {
+        if (collider.gameObject.HasComponent<MoverReparentTarget>()) {
+            Debug.Log("Unparented player");
+            transform.parent = null;
+        }
     }
 }

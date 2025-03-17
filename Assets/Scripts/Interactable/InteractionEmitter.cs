@@ -3,7 +3,7 @@ using UnityEngine;
 using UI;
 
 namespace Interactable {
-    [System.Flags] public enum InteractionSource { None = 0, Lever = 2 << 1, Button = 2 << 2, PressurePlate = 2 << 3, Conditional = 2 << 4, Inventory = 2 << 5 }
+    [System.Flags] public enum InteractionSource { None = 0, Lever = 2 << 1, Button = 2 << 2, PressurePlate = 2 << 3, Conditional = 2 << 4, Inventory = 2 << 5, Inverter = 2 << 6 }
 
     public abstract class InteractionEmitter : MonoBehaviour {
         [SerializeField] protected InteractionSource _type;
@@ -32,7 +32,7 @@ namespace Interactable {
         }
 
         protected virtual void CreatePopup() {
-            _popup = Instantiate(AssetServer.Instance.Popup, UIManager.Instance.WorldCanvas).GetComponent<InteractablePopup>();
+            _popup = Instantiate(AssetServer.Instance.InteractablePopup, UIManager.Instance.WorldCanvas).GetComponent<InteractablePopup>();
             _popup.transform.SetPositionAndRotation(transform.position + transform.forward * 0.5f, transform.rotation);
         }
 

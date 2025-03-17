@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Items {
     public class Chest : MonoBehaviour {
@@ -7,6 +8,10 @@ namespace Items {
         [SerializeField] private bool _looted = false;
 
         private Inventory _inventory;
+
+        private void Start() {
+            PlayerInputs.Instance.Actions.Player.Interaction.started += AddItem;
+        }
 
         private void OnTriggerEnter(Collider collider) {
             if (collider.TryGetComponent(out Inventory inventory)) {
@@ -20,9 +25,10 @@ namespace Items {
             }
         }
 
-        private void AddItem() {
+        private void AddItem(InputAction.CallbackContext context) {
             if (_inventory && !_looted) {
                 _inventory.AddItem(_data, _count);
+                transform.GetChild(0).GetComponent<MeshRenderer>().material.color = Color.green;
                 _looted = true;
                 enabled = false;
             }

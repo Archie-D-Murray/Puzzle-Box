@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -6,6 +7,9 @@ namespace Items {
     public class Inventory : MonoBehaviour {
         [SerializeField] private List<Item> _items = new List<Item>(1);
         private Dictionary<ItemType, int> _lookup = new Dictionary<ItemType, int>();
+
+        public Action<ItemData, int> OnAdd;
+        public Action<ItemData, int> OnRemove;
 
         private void Start() {
             for (int i = 0; i < _items.Count; i++) {
@@ -34,6 +38,7 @@ namespace Items {
                 _lookup.Add(data.Type, _items.Count);
                 _items.Add(toAdd);
             }
+            OnAdd?.Invoke(data, count);
         }
 
         public void RemoveItem(ItemData data, int count = 1) {
@@ -44,6 +49,7 @@ namespace Items {
                 } else {
                     _items[index].Count -= index;
                 }
+                OnRemove?.Invoke(data, count);
             } else {
                 Debug.LogWarning($"Tried to remove non-present item: {data.Name}", this);
             }

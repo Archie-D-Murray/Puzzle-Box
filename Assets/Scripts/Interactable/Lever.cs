@@ -13,8 +13,8 @@ namespace Interactable {
         private void Start() {
             _visual = transform.GetChild(0);
             _initialRotation += _visual.localRotation.eulerAngles.y;
-            _up = Quaternion.AngleAxis(_initialRotation - _angle, _visual.right);
-            _down = Quaternion.AngleAxis(_initialRotation + _angle, _visual.right);
+            _up = Quaternion.AngleAxis(_initialRotation - _angle, _visual.forward);
+            _down = Quaternion.AngleAxis(_initialRotation + _angle, _visual.forward);
             _visual.localRotation = _on ? _down : _up;
         }
 

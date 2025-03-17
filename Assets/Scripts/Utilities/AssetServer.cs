@@ -6,5 +6,6 @@ using Utilities;
 
 [DefaultExecutionOrder(-99)]
 public class AssetServer : Singleton<AssetServer> {
-    public GameObject Popup;
+    public GameObject InteractablePopup;
+    public GameObject InventoryPopup;
 }
