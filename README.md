@@ -8,4 +8,4 @@ could emit a 'signal' to activate/deactivate other objects like moving platforms
 - E to interact
 
 ## Screenshot
-![Example of Puzzle(./Assets/Sprites/Door_Solution.png)]
+![Example of Puzzle](./Assets/Sprites/Door_Solution.png)
